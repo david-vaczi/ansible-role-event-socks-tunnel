@@ -47,3 +47,19 @@
     - (jh6_ssh_private_key is undefined) or (jh6_ssh_private_key|length == 0)
     - (jh5_ssh_private_key|length > 0)
   no_log: true
+  
+- name: Validate created unix socket
+  block:
+    - name: Validate socks file
+      stat:
+        path: /tmp/{{ jh_socks_port }}
+      register: file_stat
+    
+    - name: Set fact for socks file
+      set_fact:
+        socks_file_success: "{{ 'SUCCESS' if file_stat.stat.exists == true else 'FAILED' }}"
+      no_log: true
+      
+    - debug:
+        msg: "{{ jh_socks_port }} - {{ socks_file_success }}"
+  when: jh_socks_port is defined  
